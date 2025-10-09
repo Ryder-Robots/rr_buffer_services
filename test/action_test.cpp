@@ -1,5 +1,9 @@
 #include <gtest/gtest.h>
 
+/**
+ * Test goal.
+ */
+
 TEST(rr_buffer_services, a_first_test)
 {
   ASSERT_EQ(4, 2 + 2);

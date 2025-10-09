@@ -1,4 +1,16 @@
-# Ryder Robot Buffer Services 
+# Ryder Robot Buffer Services
+
+## Development Notes
+
+To test code without deploying
+
+```bash
+colcon build --packages-select rr_buffer_services
+source install/local_setup.bash
+
+# To show added messages and actions
+ros2 interface list | grep rr_buffer_services
+```
 
 ## Running Tests
 
