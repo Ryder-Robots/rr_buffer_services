@@ -2,20 +2,26 @@
 
 using namespace rrobot;
 
-/*
- * Bind callback to queue.
- */
-void RrImageSubscriber::init()
-{
-  this->declare_parameter(RR_TOPIC_PARAM, RR_IMG_BUF_TOPIC_PARAM_DEFAULT);
-  topic_ = this->get_parameter(RR_TOPIC_PARAM).as_string();
-  subscription_ =
-    this->create_subscription<sensor_msgs::msg::Image>(topic_, RR_IMG_BUF_TOPIC_QUEUE_SZ_DEFAULT,
-      std::bind(&RrImageSubscriber::callback, this, std::placeholders::_1));
+std::string RrImageSubscriber::getTopicParam() {
+  return "rr_image_topic";
 }
 
+std::string RrImageSubscriber::getQueueSzParam() {
+  return "rr_queue_sz";
+}
+
+
+std::string RrImageSubscriber::getTopicDefault() {
+  return "/camera/image_raw";
+}
+
+
+int RrImageSubscriber::getQueueSzDefault() {
+  return 10;
+}
 
 void RrImageSubscriber::callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
   //TODO: Fill in the gaps
 }
+
