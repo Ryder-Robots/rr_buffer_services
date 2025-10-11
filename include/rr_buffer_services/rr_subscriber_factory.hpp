@@ -37,10 +37,6 @@ public:
      */
   void init();
 
-  /**
-     * Attaches subscribers and callbacks to the subscriber node.
-     */
-  void createSubscribers();
 
 private:
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr img_subscription_;
