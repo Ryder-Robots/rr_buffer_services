@@ -33,8 +33,5 @@ if(BUILD_TESTING)
   # target_link_libraries(${PROJECT_NAME}_action_test link_library)
 endif()
 
-set(action_files
-  "action/ImageAction.action"
-)
 
 ament_package()
