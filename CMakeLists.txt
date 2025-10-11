@@ -34,4 +34,13 @@ if(BUILD_TESTING)
 endif()
 
 
+add_executable(rrbuffer src/rr_image_subscriber.cpp src/rrbuffer.cpp)
+target_include_directories(rrbuffer PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+)
+
+ament_target_dependencies(rrbuffer rclcpp std_msgs sensor_msgs builtin_interfaces)
+
+
 ament_package()
