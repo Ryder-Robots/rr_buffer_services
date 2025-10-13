@@ -2,7 +2,7 @@
 
 using namespace rrobot;
 
-explicit void RrSubscriber::init(BufferResponse &buffer_response_, std::shared_mutex &mutex_) {
+void RrSubscriber::init(rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_, std::shared_ptr<std::shared_mutex> mutex_) {
 
 }
 
