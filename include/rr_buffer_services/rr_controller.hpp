@@ -1,10 +1,11 @@
 #ifndef RR_SUBSCRIBER_HPP
 #define RR_SUBSCRIBER_HPP
 
-#include <functional>
-#include <memory>
 #include "rclcpp/rclcpp.hpp"
 #include "rr_interfaces/msg/buffer_response.hpp"
+#include <functional>
+#include <list>
+#include <memory>
 
 namespace rrobot
 {
@@ -16,8 +17,7 @@ namespace rrobot
 class RrController : public rclcpp::Node
 {
 public:
-  RrController() : 
-    Node("rr_buffer_controller")
+  RrController() : Node("rr_buffer_controller")
   {}
 
   ~RrController() = default;
@@ -26,16 +26,48 @@ public:
    * @fn init
    * @brief performs initlization, including creating the subscriber.
    */
-  void init(rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_, std::shared_ptr<std::shared_mutex>  mutex_);
+  void init();
 
   /**
-   * @fn next_response
-   * @brief gets queued response, that will be sent to queue in next callback.
+   * @fn set_gps
+   * @brief set_gps
+   * 
+   * allows gps  subscriber to set current value.
    */
-  rr_interfaces::msg::BufferResponse::SharedPtr get_queued_response();
+  void set_gps(const sensor_msgs::msg::NavSatFix);
 
-private:
+  /**
+   * @fn set_joystick
+   * @brief allows joystick subscriber to set current value.
+   */
+  void set_joystick(const sensor_msgs::msg::Joy);
 
+  /**
+   * @fn set_batt_state
+   * @brief allows battery_state subscriber to set current value.
+   */
+  void set_batt_state(const sensor_msgs::msg::BatteryState);
+
+  /**
+   * @fn set_img
+   * @brief allows video stream subscriber to set current value.
+   */
+  void set_img(const sensor_msgs::msg::Image);
+
+  /**
+   * @fn set_imu
+   * @brief allows IMU subscriber to set current value.
+   */
+  void set_imu(const sensor_msgs::msg::Imu);
+
+  /**
+   * @fn set_ranges
+   * @brief allows Ultra-Sonics, radors and other distance sensor 
+   * subscriber to set current value.
+   */
+  void set_ranges(const std::list<sensor_msgs::msg::Range>);
+
+private:  
   /**
    * @fn reset_response 
    * @brief Creates new Response and new GUID
@@ -61,7 +93,7 @@ private:
 
   // // Shared variables between subscribers, and publisher.
   rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_;
-  std::shared_ptr<std::shared_mutex> mutex_;  // shared mutex to allow multiple readers or one writer
+  std::shared_mutex mutex_; // shared mutex to allow multiple readers or one writer
 };
 } // namespace rrobot
 
