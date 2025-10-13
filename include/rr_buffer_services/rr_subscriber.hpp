@@ -49,13 +49,13 @@ private:
    */
   void publish();
 
-  // rclcpp::TimerBase::SharedPtr timer_;
-  // rclcpp::Publisher<rr_interfaces::msg::BufferResponse>::SharedPtr publisher_;
-  // size_t count_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Publisher<rr_interfaces::msg::BufferResponse>::SharedPtr publisher_;
+  size_t count_ = 0;
 
   // // Shared variables between subscribers, and publisher.
-  // rr_interfaces::msg::BufferResponse &buffer_response_();
-  // std::shared_mutex &mutex_;  // shared mutex to allow multiple readers or one writer
+  rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_;
+  std::shared_ptr<std::shared_mutex> mutex_;  // shared mutex to allow multiple readers or one writer
 };
 } // namespace rrobot
 
