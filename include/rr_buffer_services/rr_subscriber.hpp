@@ -26,7 +26,7 @@ public:
    * @fn init
    * @brief performs initlization, including creating the subscriber.
    */
-  void init(rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_, std::shared_ptr<std::shared_mutex> mutex_);
+  void init(rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_, std::shared_ptr<std::shared_mutex>  mutex_);
 
 private:
 
