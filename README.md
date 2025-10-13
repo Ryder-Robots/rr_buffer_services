@@ -17,7 +17,7 @@ source install/local_setup.bash
 
 # To show added messages and actions
 ros2 interface list | grep rr_buffer_services
-ros2 run rr_buffer_services rr_buffer --ros-args --log-level DEBUG
+ros2 run rr_buffer_services rrbuffer --ros-args --log-level DEBUG
 
 ```
 

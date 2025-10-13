@@ -7,7 +7,7 @@
 #include "sensor_msgs/msg/image.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 
-#include "rr_buffer_services/rr_subscriber.hpp"
+#include "rr_buffer_services/rr_controller.hpp"
 #include "rr_buffer_services/rr_image_subscriber.hpp"
 
 namespace rrobot
@@ -26,7 +26,7 @@ namespace rrobot
 class RrSubscriberFactory
 {
 public:
-  RrSubscriberFactory(std::shared_ptr<RrSubscriber> subscriber): subscriber_(subscriber)
+  RrSubscriberFactory(std::shared_ptr<RrController> cnt): cnt_(cnt)
   {
     init();
   }
@@ -43,7 +43,7 @@ public:
 private:
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr img_subscription_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscription_;
-  std::shared_ptr<RrSubscriber> subscriber_;
+  std::shared_ptr<RrController> cnt_;
 
   RrImageSubscriber image_subscriber_;
 };

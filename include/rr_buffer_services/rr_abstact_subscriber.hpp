@@ -17,7 +17,7 @@ namespace rrobot {
          * 
          * Controller coordinates subscribers, and performs publising.
          */
-        virtual void set_ctl_node(std::shared_ptr<RrSubscriber>  ctl) = 0;
+        virtual void set_ctl_node(std::shared_ptr<RrController>  ctl) = 0;
     };
 }
 

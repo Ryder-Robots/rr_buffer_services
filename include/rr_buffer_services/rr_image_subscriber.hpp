@@ -1,7 +1,7 @@
 #ifndef RR_IMAGE_SUBSCRIBER_HPP
 #define RR_IMAGE_SUBSCRIBER_HPP
 
-#include "rr_buffer_services/rr_subscriber.hpp"
+#include "rr_buffer_services/rr_controller.hpp"
 #include "rr_buffer_services/rr_abstact_subscriber.hpp"
 #include "rr_interfaces/msg/buffer_response.hpp"
 
@@ -34,11 +34,11 @@ public:
   std::string getQueueSzParam() override;
   std::string getTopicDefault() override;
   int getQueueSzDefault() override;
-  void set_ctl_node(std::shared_ptr<RrSubscriber> ctl) override;
+  void set_ctl_node(std::shared_ptr<RrController> ctl) override;
 
 private:
   // Main controller
-  std::shared_ptr<RrSubscriber> ctl_;
+  std::shared_ptr<RrController> ctl_;
 };
 
 } // namespace rrobot

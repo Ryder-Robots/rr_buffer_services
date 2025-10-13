@@ -13,20 +13,26 @@ namespace rrobot
  * @class RrPublisher
  * @brief 
  */
-class RrSubscriber : public rclcpp::Node
+class RrController : public rclcpp::Node
 {
 public:
-  RrSubscriber() : 
-    Node("rr_buffer_subscriber")
+  RrController() : 
+    Node("rr_buffer_controller")
   {}
 
-  ~RrSubscriber() = default;
+  ~RrController() = default;
 
   /**
    * @fn init
    * @brief performs initlization, including creating the subscriber.
    */
   void init(rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_, std::shared_ptr<std::shared_mutex>  mutex_);
+
+  /**
+   * @fn next_response
+   * @brief gets queued response, that will be sent to queue in next callback.
+   */
+  rr_interfaces::msg::BufferResponse::SharedPtr get_queued_response();
 
 private:
 

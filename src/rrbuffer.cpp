@@ -10,10 +10,10 @@ int main(int argc, char * argv[])
 
   shared_ptr message =  rr_interfaces::msg::BufferResponse::SharedPtr();
   std::shared_ptr<std::shared_mutex> shared_mtx = std::make_shared<std::shared_mutex>();
-  std::shared_ptr<RrSubscriber> minSubscriber = std::make_shared<RrSubscriber>();
-  minSubscriber->init(message, shared_mtx);
-  auto subscriberFactory = std::make_shared<RrSubscriberFactory>(minSubscriber);
-  rclcpp::spin(minSubscriber);
+  std::shared_ptr<RrController> ctl = std::make_shared<RrController>();
+  ctl->init(message, shared_mtx);
+  auto subscriberFactory = std::make_shared<RrSubscriberFactory>(ctl);
+  rclcpp::spin(ctl);
   rclcpp::shutdown();
   return 0;
 }

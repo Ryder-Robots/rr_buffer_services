@@ -30,7 +30,7 @@ void RrImageSubscriber::callback(const sensor_msgs::msg::Image::SharedPtr src_ms
   //TODO: Fill in the gaps
 }
 
-void RrImageSubscriber::set_ctl_node(std::shared_ptr<RrSubscriber> ctl)
+void RrImageSubscriber::set_ctl_node(std::shared_ptr<RrController> ctl)
 {
   ctl_ = ctl;
 }
