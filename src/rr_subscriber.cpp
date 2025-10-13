@@ -8,7 +8,6 @@ void RrSubscriber::init(rr_interfaces::msg::BufferResponse::SharedPtr buffer_res
 }
 
 void RrSubscriber::reset_response() {
-
 }
 
 void RrSubscriber::callback() {
