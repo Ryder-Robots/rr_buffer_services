@@ -37,8 +37,8 @@ public:
   void set_ctl_node(std::shared_ptr<RrSubscriber> ctl) override;
 
 private:
-  // Current image message.
-  const sensor_msgs::msg::Image::SharedPtr msg_;
+  // Main controller
+  std::shared_ptr<RrSubscriber> ctl_;
 };
 
 } // namespace rrobot

@@ -20,4 +20,6 @@ void RrSubscriberFactory::init()
   auto img_callback =  std::bind(&RrImageSubscriber::callback, image_subscriber_, std::placeholders::_1);
   auto img_topic_str = subscriber_->get_parameter(image_subscriber_.getTopicParam()).as_string();
   img_subscription_ = subscriber_->create_subscription<sensor_msgs::msg::Image>(img_topic_str, rclcpp::SensorDataQoS(), img_callback, options);
+
+  RCLCPP_INFO(subscriber_->get_logger(), "completed initilization");
 }

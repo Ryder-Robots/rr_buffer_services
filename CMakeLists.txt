@@ -45,6 +45,12 @@ target_include_directories(rrbuffer PUBLIC
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 
+# Example of installing an executable
+install(TARGETS rrbuffer
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
 ament_target_dependencies(rrbuffer rclcpp rr_interfaces std_msgs sensor_msgs builtin_interfaces)
 
 
