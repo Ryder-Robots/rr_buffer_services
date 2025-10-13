@@ -3,15 +3,59 @@
 
 #include <functional>
 #include <memory>
-
 #include "rclcpp/rclcpp.hpp"
+#include "rr_interfaces/msg/buffer_response.hpp"
 
 namespace rrobot
 {
+
+/**
+ * @class RrPublisher
+ * @brief 
+ */
 class RrSubscriber : public rclcpp::Node
 {
 public:
-  RrSubscriber() : Node("rr_buffer_subscriber") {}
+  RrSubscriber() : 
+    Node("rr_buffer_subscriber")
+  {}
+
+  ~RrSubscriber() = default;
+
+  /**
+   * @fn init
+   * @brief performs initlization, including creating the subscriber.
+   */
+  void init(rr_interfaces::msg::BufferResponse &buffer_response_, std::shared_mutex &mutex_);
+
+private:
+
+  /**
+   * @fn reset_response 
+   * @brief Creates new Response and new GUID
+   */
+  void reset_response();
+
+  /**
+   * @fn callback
+   * @brief callbacks based on timer.
+   */
+  void callback();
+
+  /**
+   * @fn publish
+   * @brief publishes to the buffer topic.
+   * 
+   */
+  void publish();
+
+  // rclcpp::TimerBase::SharedPtr timer_;
+  // rclcpp::Publisher<rr_interfaces::msg::BufferResponse>::SharedPtr publisher_;
+  // size_t count_;
+
+  // // Shared variables between subscribers, and publisher.
+  // rr_interfaces::msg::BufferResponse &buffer_response_();
+  // std::shared_mutex &mutex_;  // shared mutex to allow multiple readers or one writer
 };
 } // namespace rrobot
 

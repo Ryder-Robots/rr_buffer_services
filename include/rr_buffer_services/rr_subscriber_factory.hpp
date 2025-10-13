@@ -20,6 +20,8 @@ namespace rrobot
  * will have its own type which needs to be treated as a separate type,  but the business logic is the same.
  * 
  * In order to simplify, the factory is used.
+ * 
+ * CAVEAT: This will need to be moved to a plugin.
  */
 class RrSubscriberFactory
 {

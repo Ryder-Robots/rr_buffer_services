@@ -2,7 +2,8 @@
 #define RR_IMAGE_SUBSCRIBER_HPP
 
 #include "rr_buffer_services/rr_abstact_subscriber.hpp"
-#include "sensor_msgs/msg/image.hpp"
+#include "rr_interfaces/msg/buffer_response.hpp"
+
 
 using namespace std;
 

@@ -12,6 +12,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(rr_interfaces REQUIRED)
 
 
 if(BUILD_TESTING)
@@ -40,7 +41,7 @@ target_include_directories(rrbuffer PUBLIC
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 
-ament_target_dependencies(rrbuffer rclcpp std_msgs sensor_msgs builtin_interfaces)
+ament_target_dependencies(rrbuffer rclcpp rr_interfaces std_msgs sensor_msgs builtin_interfaces)
 
 
 ament_package()
