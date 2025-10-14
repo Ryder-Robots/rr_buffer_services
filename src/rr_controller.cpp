@@ -19,6 +19,7 @@ void RrController::publish()
   std::shared_lock lock(mutex_);
 }
 
+// gps setter/getter
 void RrController::set_gps(const sensor_msgs::msg::NavSatFix gps)
 {
   RCLCPP_DEBUG(this->get_logger(), "recieved GPS");
@@ -26,6 +27,7 @@ void RrController::set_gps(const sensor_msgs::msg::NavSatFix gps)
   buffer_response_->feature_sets.has_gps = true;
   buffer_response_->gps = gps;
 }
+
 
 void RrController::set_joystick(const sensor_msgs::msg::Joy joy)
 {
@@ -35,6 +37,7 @@ void RrController::set_joystick(const sensor_msgs::msg::Joy joy)
   buffer_response_->joystick = joy;
 }
 
+// batt state getter/setter
 void RrController::set_batt_state(const sensor_msgs::msg::BatteryState batt_state)
 {
   RCLCPP_DEBUG(this->get_logger(), "recieved batt_state");
@@ -43,6 +46,14 @@ void RrController::set_batt_state(const sensor_msgs::msg::BatteryState batt_stat
   buffer_response_->batt_state = batt_state;
 }
 
+
+const sensor_msgs::msg::BatteryState RrController::get_batt_state() {
+    RCLCPP_DEBUG(this->get_logger(), "sending batt_state");
+    std::shared_lock<std::shared_mutex> lock(mutex_);
+    return buffer_response_->batt_state;
+}
+
+// image setter/getter
 void RrController::set_img(const sensor_msgs::msg::Image img)
 {
   RCLCPP_DEBUG(this->get_logger(), "recieved img");
