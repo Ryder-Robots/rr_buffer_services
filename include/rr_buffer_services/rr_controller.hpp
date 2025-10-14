@@ -60,6 +60,7 @@ public:
    * @brief allows video stream subscriber to set current value.
    */
   void set_img(const sensor_msgs::msg::Image);
+  const sensor_msgs::msg::Image get_img();
 
   /**
    * @fn set_imu
@@ -76,20 +77,44 @@ public:
   void set_ranges(const std::list<sensor_msgs::msg::Range>);
   const std::list<sensor_msgs::msg::Range> get_ranges();
 
-private:  
   /**
+   * @fn get_feature_set
+   * @brief returns a list of features that are available boolean values.
+   * 
+   * If a feature has been set then it will be set as "true" otherwise it will be false.
+   */
+  const rr_interfaces::msg::FeatureSet get_feature_set();
+
+private:
+  /**
+   * @fn callback
+   * @brief callbacks based on timer.
+   * 
+   * invokes publisher service to publish reponse message.
+   */
+  void callback();
+
+  // variables
+  sensor_msgs::msg::NavSatFix::SharedPtr gps_;
+  sensor_msgs::msg::Joy::SharedPtr joystick_;
+  sensor_msgs::msg::BatteryState::SharedPtr batt_state_;
+  sensor_msgs::msg::Image::SharedPtr img;
+  sensor_msgs::msg::Imu::SharedPtr imu;
+  std::shared_ptr<std::list<sensor_msgs::msg::Range>> ranges = std::make_shared<std::list<sensor_msgs::msg::Range>>();
+  rr_interfaces::msg::FeatureSet::SharedPtr feature_set;
+
+  // shared mutex to allow multiple readers or one writer
+  std::shared_mutex mutex_;
+
+  // methods and variables below will be moved. s
+  /**
+   * @deprecated
    * @fn reset_response 
    * @brief Creates new Response and new GUID
    */
   void reset_response();
-
   /**
-   * @fn callback
-   * @brief callbacks based on timer.
-   */
-  void callback();
-
-  /**
+   * @deprecated
    * @fn publish
    * @brief publishes to the buffer topic.
    * 
@@ -97,12 +122,13 @@ private:
   void publish();
 
   rclcpp::TimerBase::SharedPtr timer_;
+  // This will be moved to a publishing service, as well reset, and publish,
+  // callback from the timer_ variable will control this.
   rclcpp::Publisher<rr_interfaces::msg::BufferResponse>::SharedPtr publisher_;
   size_t count_ = 0;
 
   // // Shared variables between subscribers, and publisher.
   rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_;
-  std::shared_mutex mutex_; // shared mutex to allow multiple readers or one writer
 };
 } // namespace rrobot
 
