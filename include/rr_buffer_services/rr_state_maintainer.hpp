@@ -14,6 +14,17 @@ namespace rrobot
      * @class RrStateMaintainer
      * @brief Shared object that maintains state variables accross different subscribers, and publisers.
      * 
+     * when setter is activated, state remains until the setter is written to again.
+     * 
+     * Supported feature are:
+     *   - GPS
+     *   - Peripheral controllers (joysticks)
+     *   - battery state (mangager) such BMS
+     *   - camera streams
+     *   - range detection devices, such as ultra sonic
+     *   - IMU
+     * 
+     * State is used to send to normalization layer.
      */
 class RrStateMaintainer
 {
@@ -76,13 +87,13 @@ private:
   void init();
 
   // variables
-  sensor_msgs::msg::NavSatFix gps_;
-  sensor_msgs::msg::Joy joystick_;
-  sensor_msgs::msg::BatteryState batt_state_;
-  sensor_msgs::msg::Image img_;
-  sensor_msgs::msg::Imu imu_;
-  std::list<sensor_msgs::msg::Range> ranges_; // = std::list<sensor_msgs::msg::Range>();
-  rr_interfaces::msg::FeatureSet feature_set_;
+  sensor_msgs::msg::NavSatFix gps_;            // GPS
+  sensor_msgs::msg::Joy joystick_;             // last command recieved by controller peripheral device 
+  sensor_msgs::msg::BatteryState batt_state_;  // current battery state
+  sensor_msgs::msg::Image img_;                // current image
+  sensor_msgs::msg::Imu imu_;                  // IMU 
+  std::list<sensor_msgs::msg::Range> ranges_;  // ranges given by ultra-sonic, or other range detecting device
+  rr_interfaces::msg::FeatureSet feature_set_; // indicates that feature is present, or has been present
 
   // shared mutex to allow multiple readers or one writer
   std::shared_mutex mutex_;

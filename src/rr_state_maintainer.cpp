@@ -22,6 +22,13 @@ const sensor_msgs::msg::NavSatFix RrStateMaintainer::get_gps()
   return gps_;
 }
 
+// default all feature sets to false to start with.
 void RrStateMaintainer::init()
 {
+  feature_set_.has_batt_state = false;
+  feature_set_.has_gps = false;
+  feature_set_.has_img = false;
+  feature_set_.has_imu = false;
+  feature_set_.has_joy = false;
+  feature_set_.has_ranges = false;
 }
