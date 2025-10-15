@@ -20,6 +20,7 @@ add_library(${PROJECT_NAME}_lib
   src/rr_image_subscriber.cpp
   src/rr_subscriber_factory.cpp
   src/rr_controller.cpp
+  src/rr_state_maintainer.cpp
 )
 
 ament_target_dependencies(${PROJECT_NAME}_lib rclcpp rr_interfaces std_msgs sensor_msgs builtin_interfaces)
