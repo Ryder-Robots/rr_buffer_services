@@ -24,7 +24,8 @@ ros2 run rr_buffer_services rrbuffer --ros-args --log-level DEBUG
 ## Running Tests
 
 ```bash
-colcon test --ctest-args tests --packages-up-to  rr_buffer_services
+colcon build --packages-up-to rr_buffer_services --cmake-args -DBUILD_TESTING=On --allow-overriding rtest
+colcon test-result --verbose
 ```
 
 ## References

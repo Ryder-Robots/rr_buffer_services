@@ -7,6 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_gmock REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -43,10 +44,11 @@ install(TARGETS
 
 # --- Build and link test using same library ---
 if(BUILD_TESTING)
-  find_package(ament_cmake_gtest REQUIRED)
-  ament_add_gtest(${PROJECT_NAME}_test test/rr_controller_test.cpp)
-  target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME}_lib)
-  ament_target_dependencies(${PROJECT_NAME}_test rclcpp rr_interfaces sensor_msgs)
+  add_subdirectory(test)
+  # find_package(ament_cmake_gtest REQUIRED)
+  # ament_add_gtest(${PROJECT_NAME}_test test/rr_controller_test.cpp)
+  # target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME}_lib)
+  # ament_target_dependencies(${PROJECT_NAME}_test rclcpp rr_interfaces sensor_msgs)
 endif()
 
 ament_package()
