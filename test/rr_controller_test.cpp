@@ -72,8 +72,6 @@ TEST_F(TestController, setGps)
   EXPECT_NEAR(actual.latitude, -33.8688, 0.000009);
   EXPECT_NEAR(actual.longitude, 151.2093, 0.000009);
   EXPECT_NEAR(actual.altitude, 58.0, 1);
-
-  EXPECT_EQ(1, 1);
 }
 
 
