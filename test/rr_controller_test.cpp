@@ -1,9 +1,12 @@
 // have a look at https://medium.com/@junbs95/code-completion-and-debugging-for-ros2-in-vscode-a4ede900d979 for
 // more information about debugging,  doesn't work unless on command prompt
 
-#include "rclcpp/rclcpp.hpp"
-#include "rr_buffer_services/rr_controller.hpp"
+// TODO: This test needs to be renamed to rr_state_maintainer_test
+
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include "rclcpp/rclcpp.hpp"
+#include "rr_buffer_services/rr_state_maintainer.hpp"
 
 using namespace rrobot;
 
@@ -30,6 +33,9 @@ protected:
     // Code here will be called immediately after each test (right
     // before the destructor).
   }
+
+  rclcpp::Logger logger_ =  rclcpp::get_logger("test_logger");
+  RrStateMaintainer state_maintainer_ =  RrStateMaintainer(logger_);
 };
 
 
@@ -39,22 +45,33 @@ TEST_F(TestController, setGps)
   rclcpp::Clock clock;
   auto current_time = clock.now();
 
-  sensor_msgs::msg::NavSatFix navsat_msg;
-  navsat_msg.header.stamp = current_time;
-  navsat_msg.header.frame_id = "gps_link";
-  navsat_msg.status.status = sensor_msgs::msg::NavSatStatus::STATUS_FIX;
-  navsat_msg.status.service = sensor_msgs::msg::NavSatStatus::SERVICE_GPS;
+  sensor_msgs::msg::NavSatFix expected;
+  expected.header.stamp = current_time;
+  expected.header.frame_id = "gps_link";
+  expected.status.status = sensor_msgs::msg::NavSatStatus::STATUS_FIX;
+  expected.status.service = sensor_msgs::msg::NavSatStatus::SERVICE_GPS;
 
   // Set geographic coordinates (latitude, longitude, altitude)
-  navsat_msg.latitude = -33.8688;  // Degrees, e.g., Sydney
-  navsat_msg.longitude = 151.2093; // Degrees, e.g., Sydney
-  navsat_msg.altitude = 58.0;      // In meters above WGS84 ellipsoid
+  expected.latitude = -33.8688;  // Degrees, e.g., Sydney
+  expected.longitude = 151.2093; // Degrees, e.g., Sydney
+  expected.altitude = 58.0;      // In meters above WGS84 ellipsoid
 
   // Set position covariance (if known, otherwise leave as default zeros)
-  std::fill(std::begin(navsat_msg.position_covariance), std::end(navsat_msg.position_covariance), 0.0);
-  navsat_msg.position_covariance_type = sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
+  std::fill(std::begin(expected.position_covariance), std::end(expected.position_covariance), 0.0);
+  expected.position_covariance_type = sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
+  state_maintainer_.set_gps(expected);
 
-  // node_->set_gps(navsat_msg);
+  // Result
+  sensor_msgs::msg::NavSatFix actual = state_maintainer_.get_gps();
+  EXPECT_EQ(actual.header.stamp, current_time);
+  EXPECT_EQ(actual.header.frame_id, "gps_link");
+  EXPECT_EQ(actual.status.status, sensor_msgs::msg::NavSatStatus::STATUS_FIX);
+  EXPECT_EQ(actual.status.service, sensor_msgs::msg::NavSatStatus::SERVICE_GPS);
+
+  // allow a tolerance of around 1 meter.
+  EXPECT_NEAR(actual.latitude, -33.8688, 0.000009);
+  EXPECT_NEAR(actual.longitude, 151.2093, 0.000009);
+  EXPECT_NEAR(actual.altitude, 58.0, 1);
 
   EXPECT_EQ(1, 1);
 }

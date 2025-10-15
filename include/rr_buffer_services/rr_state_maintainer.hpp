@@ -76,13 +76,13 @@ private:
   void init();
 
   // variables
-  sensor_msgs::msg::NavSatFix::SharedPtr gps_;
-  sensor_msgs::msg::Joy::SharedPtr joystick_;
-  sensor_msgs::msg::BatteryState::SharedPtr batt_state_;
-  sensor_msgs::msg::Image::SharedPtr img_;
-  sensor_msgs::msg::Imu::SharedPtr imu_;
-  std::shared_ptr<std::list<sensor_msgs::msg::Range>> ranges_ = std::make_shared<std::list<sensor_msgs::msg::Range>>();
-  rr_interfaces::msg::FeatureSet::SharedPtr feature_set_;
+  sensor_msgs::msg::NavSatFix gps_;
+  sensor_msgs::msg::Joy joystick_;
+  sensor_msgs::msg::BatteryState batt_state_;
+  sensor_msgs::msg::Image img_;
+  sensor_msgs::msg::Imu imu_;
+  std::list<sensor_msgs::msg::Range> ranges_; // = std::list<sensor_msgs::msg::Range>();
+  rr_interfaces::msg::FeatureSet feature_set_;
 
   // shared mutex to allow multiple readers or one writer
   std::shared_mutex mutex_;
