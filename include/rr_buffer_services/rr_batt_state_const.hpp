@@ -10,7 +10,8 @@
  * * temperature (float32): Battery temperature in degrees Celsius (C).
  * * current (float32): Battery current, positive when discharging, negative when charging (amperes).
  * * charge (float32): Charge remaining in ampere-hours (Ah).
- * * capacity (float32): Battery capacity in ampere-hours.
+ * * capacity (float32): Battery capacity in ampere-hours. For a 3200 mAh battery this would be 3.2, Indicating
+ *   3.2 Amp hours.
  * * design_capacity (float32): Original design capacity (Ah).
  * * percentage (float32): State of charge in range [0.0, 1.0].
  * --- 0.0 means the battery is fully discharged (empty).
@@ -32,6 +33,7 @@
 namespace rrobot {
 #define FRAME_ID_BATT_STATE "power_supply"
 #define TOPIC_BATTERY_STATE "/battery_state"
+#define POWER_SUPPLY_LOCATION "Robot-mounted"
 }
 
 #endif

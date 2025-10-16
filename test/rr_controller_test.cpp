@@ -147,8 +147,25 @@ TEST_F(TestController, batt_state)
   // 20 degrees Celsius
   batt_state.temperature = 20;
   batt_state.charge = 8;
-  batt_state.
+  batt_state.capacity = 4.2;
+  batt_state.design_capacity = 4.2;
+  batt_state.percentage = 0.8;
+  batt_state.power_supply_status = sensor_msgs::msg::BatteryState::POWER_SUPPLY_STATUS_FULL;
+  batt_state.power_supply_health = sensor_msgs::msg::BatteryState::POWER_SUPPLY_HEALTH_GOOD;
+  batt_state.power_supply_technology = sensor_msgs::msg::BatteryState::POWER_SUPPLY_TECHNOLOGY_LIPO;
+  batt_state.present = true;
+  batt_state.cell_voltage.push_back(3.2);
+  batt_state.cell_voltage.push_back(3.2);
+  batt_state.cell_voltage.push_back(3.2);
+  batt_state.cell_voltage.push_back(3.2);
+  batt_state.cell_temperature.push_back(18);
+  batt_state.cell_temperature.push_back(20);
+  batt_state.cell_temperature.push_back(20);
+  batt_state.cell_temperature.push_back(21);
+  batt_state.location = POWER_SUPPLY_LOCATION;
+  batt_state.serial_number = "";
 
+  state_maintainer_.set_batt_state(batt_state);
 }
 
 
