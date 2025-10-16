@@ -22,6 +22,25 @@ const sensor_msgs::msg::NavSatFix RrStateMaintainer::get_gps()
   return gps_;
 }
 
+void RrStateMaintainer::set_joystick(const sensor_msgs::msg::Joy joystick)
+{
+  std::unique_lock<std::shared_mutex> lock(mutex_);
+  feature_set_.has_joy = true;
+  joystick_ = joystick;
+}
+
+bool RrStateMaintainer::has_joystick()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return feature_set_.has_joy;
+}
+
+const sensor_msgs::msg::Joy RrStateMaintainer::get_joystick()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return joystick_;
+}
+
 // default all feature sets to false to start with.
 void RrStateMaintainer::init()
 {

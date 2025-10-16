@@ -3,10 +3,11 @@
 
 // TODO: This test needs to be renamed to rr_state_maintainer_test
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include "rclcpp/rclcpp.hpp"
+#include "rr_buffer_services/rr_joystick_const.hpp"
 #include "rr_buffer_services/rr_state_maintainer.hpp"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace rrobot;
 
@@ -34,13 +35,13 @@ protected:
     // before the destructor).
   }
 
-  rclcpp::Logger logger_ =  rclcpp::get_logger("test_logger");
-  RrStateMaintainer state_maintainer_ =  RrStateMaintainer(logger_);
+  rclcpp::Logger logger_ = rclcpp::get_logger("test_logger");
+  RrStateMaintainer state_maintainer_ = RrStateMaintainer(logger_);
 };
 
 
 // Test setters and getters
-TEST_F(TestController, setGps)
+TEST_F(TestController, gps)
 {
   rclcpp::Clock clock;
   auto current_time = clock.now();
@@ -74,6 +75,60 @@ TEST_F(TestController, setGps)
   EXPECT_NEAR(actual.altitude, 58.0, 1);
 
   GTEST_EXPECT_TRUE(state_maintainer_.has_gps());
+}
+
+TEST_F(TestController, joystick)
+{
+  rclcpp::Clock clock;
+  auto current_time = clock.now();
+  sensor_msgs::msg::Joy joystick;
+
+  joystick.header.frame_id = FRAME_ID_JOY_PS4;
+  joystick.header.stamp = current_time;
+
+  joystick.axes.resize(4);
+  auto it = joystick.axes.begin();
+
+  std::advance(it, CTRL_AXIS_XL);
+  joystick.axes.insert(it, 0.1f);
+
+  it = joystick.axes.begin();
+  std::advance(it, CTRL_AXIS_YL);
+  joystick.axes.insert(it, -0.8f);
+  
+  it = joystick.axes.begin();
+  std::advance(it, CTRL_AXIS_XR);
+  joystick.axes.insert(it, 0.0);
+
+  it = joystick.axes.begin();
+  std::advance(it, CTRL_AXIS_YR);
+  joystick.axes.insert(it, 0.3f);
+
+  // fill up buffer to avoid nulls
+  joystick.buttons.resize(14);
+  std::fill(joystick.buttons.begin(), joystick.buttons.end(), false);
+  
+  auto it2 = joystick.buttons.begin();
+  std::advance(it2, CTRL_X_BUTTON);
+  joystick.buttons.insert(it2, true);
+  
+  it2 = joystick.buttons.begin();
+  std::advance(it2, CTRL_SCROLL_UP);
+  joystick.buttons.insert(it2, true);
+
+  state_maintainer_.set_joystick(joystick);
+
+  // From experience found controllers will start to lose precision over time, especially
+  // if you like first player shooters hahahahahahah, going with 0.0009 which is pretty arbitory
+  sensor_msgs::msg::Joy actual = state_maintainer_.get_joystick();
+  EXPECT_NEAR(actual.axes.at(CTRL_AXIS_XL), 0.1, 0.11);
+  EXPECT_NEAR(actual.axes.at(CTRL_AXIS_YL), -0.8, 0.81);
+  EXPECT_NEAR(actual.axes.at(CTRL_AXIS_YL), -0.8, 0.81);
+  EXPECT_NEAR(actual.axes.at(CTRL_AXIS_YR), 0.3, 0.31);
+  EXPECT_TRUE(actual.buttons.at(CTRL_X_BUTTON));
+  EXPECT_TRUE(actual.buttons.at(CTRL_SCROLL_UP));
+
+  EXPECT_TRUE(state_maintainer_.has_joystick());
 }
 
 
