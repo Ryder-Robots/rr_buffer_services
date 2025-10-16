@@ -5,6 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rr_buffer_services/rr_joystick_const.hpp"
+#include "rr_buffer_services/rr_batt_state_const.hpp"
 #include "rr_buffer_services/rr_state_maintainer.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -129,6 +130,25 @@ TEST_F(TestController, joystick)
   EXPECT_TRUE(actual.buttons.at(CTRL_SCROLL_UP));
 
   EXPECT_TRUE(state_maintainer_.has_joystick());
+}
+
+TEST_F(TestController, batt_state)
+{
+  sensor_msgs::msg::BatteryState batt_state;
+  rclcpp::Clock clock;
+  auto current_time = clock.now();
+  
+  batt_state.header.stamp = current_time;
+  batt_state.header.frame_id = FRAME_ID_BATT_STATE;
+
+  // 14 volt battery
+  batt_state.voltage = 14;
+
+  // 20 degrees Celsius
+  batt_state.temperature = 20;
+  batt_state.charge = 8;
+  batt_state.
+
 }
 
 
