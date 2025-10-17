@@ -60,6 +60,64 @@ const sensor_msgs::msg::BatteryState RrStateMaintainer::get_batt_state()
   return batt_state_;
 }
 
+
+void RrStateMaintainer::set_image(const sensor_msgs::msg::Image img)
+{
+  std::unique_lock<std::shared_mutex> lock(mutex_);
+  feature_set_.has_img = true;
+  img_ = img;
+}
+
+bool RrStateMaintainer::has_image()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return feature_set_.has_img;
+}
+
+const sensor_msgs::msg::Image RrStateMaintainer::get_image()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return img_;
+}
+
+void RrStateMaintainer::set_imu(const sensor_msgs::msg::Imu imu)
+{
+  std::unique_lock<std::shared_mutex> lock(mutex_);
+  feature_set_.has_imu = true;
+  imu_ = imu;
+}
+
+bool RrStateMaintainer::has_imu()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return feature_set_.has_imu;
+}
+
+const sensor_msgs::msg::Imu RrStateMaintainer::get_imu()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return imu_;
+}
+
+void RrStateMaintainer::set_ranges(const std::list<sensor_msgs::msg::Range> ranges)
+{
+  std::unique_lock<std::shared_mutex> lock(mutex_);
+  feature_set_.has_ranges = true;
+  ranges_ = ranges;
+}
+
+bool RrStateMaintainer::has_ranges()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return feature_set_.has_ranges;
+}
+
+const std::list<sensor_msgs::msg::Range> RrStateMaintainer::get_ranges()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return ranges_;
+}
+
 // default all feature sets to false to start with.
 void RrStateMaintainer::init()
 {

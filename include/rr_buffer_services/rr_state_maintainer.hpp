@@ -25,6 +25,9 @@ namespace rrobot
      *   - IMU
      * 
      * State is used to send to normalization layer.
+     * 
+     * For image encoding refer to https://docs.ros.org/en/noetic/api/sensor_msgs/html/image__encodings_8h.html
+     * Documenation on images can be found at https://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/Image.html
      */
 class RrStateMaintainer
 {

@@ -9,14 +9,13 @@
 #include "rr_buffer_services/rr_state_maintainer.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <sensor_msgs/image_encodings.hpp>
 
 using namespace rrobot;
 
 class TestController : public testing::Test
 {
 protected:
-  // std::shared_ptr<RrController> node_;
-
   TestController()
   {
   }
