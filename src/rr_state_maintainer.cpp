@@ -41,6 +41,25 @@ const sensor_msgs::msg::Joy RrStateMaintainer::get_joystick()
   return joystick_;
 }
 
+void RrStateMaintainer::set_batt_state(const sensor_msgs::msg::BatteryState batt_state)
+{
+  std::unique_lock<std::shared_mutex> lock(mutex_);
+  feature_set_.has_batt_state = true;
+  batt_state_ = batt_state;
+}
+
+bool RrStateMaintainer::has_batt_state()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return feature_set_.has_batt_state;
+}
+
+const sensor_msgs::msg::BatteryState RrStateMaintainer::get_batt_state()
+{
+  std::shared_lock<std::shared_mutex> lock(mutex_);
+  return batt_state_;
+}
+
 // default all feature sets to false to start with.
 void RrStateMaintainer::init()
 {

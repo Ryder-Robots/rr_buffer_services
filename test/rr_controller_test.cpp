@@ -4,8 +4,8 @@
 // TODO: This test needs to be renamed to rr_state_maintainer_test
 
 #include "rclcpp/rclcpp.hpp"
-#include "rr_buffer_services/rr_joystick_const.hpp"
 #include "rr_buffer_services/rr_batt_state_const.hpp"
+#include "rr_buffer_services/rr_joystick_const.hpp"
 #include "rr_buffer_services/rr_state_maintainer.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -96,7 +96,7 @@ TEST_F(TestController, joystick)
   it = joystick.axes.begin();
   std::advance(it, CTRL_AXIS_YL);
   joystick.axes.insert(it, -0.8f);
-  
+
   it = joystick.axes.begin();
   std::advance(it, CTRL_AXIS_XR);
   joystick.axes.insert(it, 0.0);
@@ -108,11 +108,11 @@ TEST_F(TestController, joystick)
   // fill up buffer to avoid nulls
   joystick.buttons.resize(14);
   std::fill(joystick.buttons.begin(), joystick.buttons.end(), false);
-  
+
   auto it2 = joystick.buttons.begin();
   std::advance(it2, CTRL_X_BUTTON);
   joystick.buttons.insert(it2, true);
-  
+
   it2 = joystick.buttons.begin();
   std::advance(it2, CTRL_SCROLL_UP);
   joystick.buttons.insert(it2, true);
@@ -137,7 +137,7 @@ TEST_F(TestController, batt_state)
   sensor_msgs::msg::BatteryState batt_state;
   rclcpp::Clock clock;
   auto current_time = clock.now();
-  
+
   batt_state.header.stamp = current_time;
   batt_state.header.frame_id = FRAME_ID_BATT_STATE;
 
@@ -166,16 +166,37 @@ TEST_F(TestController, batt_state)
   batt_state.serial_number = "";
 
   state_maintainer_.set_batt_state(batt_state);
+  sensor_msgs::msg::BatteryState actual = state_maintainer_.get_batt_state();
+
+  EXPECT_EQ(actual.header.stamp, current_time);
+  EXPECT_EQ(actual.header.frame_id, FRAME_ID_BATT_STATE);
+
+  EXPECT_NEAR(actual.voltage, 14, 0.1);
+  EXPECT_NEAR(actual.temperature, 20, 0.1);
+  EXPECT_NEAR(actual.charge, 8, 0.1);
+  EXPECT_NEAR(actual.design_capacity, 4.2, 0.01);
+  EXPECT_NEAR(actual.percentage, 0.8, 0.0001);
+  EXPECT_EQ(actual.power_supply_status, sensor_msgs::msg::BatteryState::POWER_SUPPLY_STATUS_FULL);
+  EXPECT_EQ(actual.power_supply_health, sensor_msgs::msg::BatteryState::POWER_SUPPLY_HEALTH_GOOD);
+  EXPECT_EQ(actual.power_supply_technology, sensor_msgs::msg::BatteryState::POWER_SUPPLY_TECHNOLOGY_LIPO);
+  EXPECT_TRUE(actual.present);
+
+  for (auto it = actual.cell_voltage.begin(); it != actual.cell_voltage.end(); ++it) {
+    EXPECT_NEAR(*it, 3.2, 0.01);
+  }
+
+  EXPECT_NEAR(actual.cell_temperature.at(0), 18, 0.1);
+  EXPECT_NEAR(actual.cell_temperature.at(1), 20, 0.1);
+  EXPECT_NEAR(actual.cell_temperature.at(2), 20, 0.1);
+  EXPECT_NEAR(actual.cell_temperature.at(3), 21, 0.1);
+  EXPECT_EQ(actual.location, POWER_SUPPLY_LOCATION);
+  EXPECT_EQ(actual.serial_number, "");
 }
 
 
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
-  // rclcpp::init(argc, argv);
-
-
   auto result = RUN_ALL_TESTS();
-  // rclcpp::shutdown();
   return result;
 }
