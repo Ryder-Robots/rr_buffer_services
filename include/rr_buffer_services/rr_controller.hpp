@@ -2,13 +2,27 @@
 #define RR_SUBSCRIBER_HPP
 
 #include "rclcpp/rclcpp.hpp"
-#include "rr_interfaces/msg/buffer_response.hpp"
+#include "rr_common_base/rr_state_maintainer.hpp"
+#include "rr_common_base/rr_buf_factory.hpp"
 #include <functional>
 #include <list>
 #include <memory>
+#include <pluginlib/class_loader.hpp>
 
-namespace rrobot
+namespace rr_buffer_services
 {
+
+// plugins to load during initilization.
+#define RR_COMMON_BASE "rr_common_base"
+#define RR_STATE_MAINTAINER "rrobot::RrStateMaintainer"
+#define RR_STATE_MAINTAINER_CLASS rrobot::RrStateMaintainer
+#define RR_DEFAULT_STATE_MAINTAINER "rr_common_plugins::RrStateMaintainerImpl"
+#define RR_STATE_BUF_FACTORY "rrobot::RrBufFactory"
+#define RR_STATE_BUF_FACTORY_CLASS rrobot::RrBufFactory
+#define RR_DEFAULT_ROBOT_TYPE "rr_common_plugins::RrBufferFactorySimple"
+
+// CLI arguments
+#define RR_CLI_ROBOT_TYPE "robot-type"
 
 /**
  * @class RrController
@@ -32,58 +46,6 @@ public:
    */
   void init();
 
-  /**
-   * @fn set_gps
-   * @brief set_gps
-   * 
-   * allows gps  subscriber to set current value.
-   */
-  void set_gps(const sensor_msgs::msg::NavSatFix);
-  const sensor_msgs::msg::NavSatFix get_gps();
-
-  /**
-   * @fn set_joystick
-   * @brief allows joystick subscriber to set current value.
-   */
-  void set_joystick(const sensor_msgs::msg::Joy);
-  const sensor_msgs::msg::Joy get_joystick();
-
-  /**
-   * @fn set_batt_state
-   * @brief allows battery_state subscriber to set current value.
-   */
-  void set_batt_state(const sensor_msgs::msg::BatteryState);
-  const sensor_msgs::msg::BatteryState get_batt_state();
-
-  /**
-   * @fn set_img
-   * @brief allows video stream subscriber to set current value.
-   */
-  void set_img(const sensor_msgs::msg::Image);
-  const sensor_msgs::msg::Image get_img();
-
-  /**
-   * @fn set_imu
-   * @brief allows IMU subscriber to set current value.
-   */
-  void set_imu(const sensor_msgs::msg::Imu);
-  const sensor_msgs::msg::Imu get_imu();
-
-  /**
-   * @fn set_ranges
-   * @brief allows Ultra-Sonics, radors and other distance sensor 
-   * subscriber to set current value.
-   */
-  void set_ranges(const std::list<sensor_msgs::msg::Range>);
-  const std::list<sensor_msgs::msg::Range> get_ranges();
-
-  /**
-   * @fn get_feature_set
-   * @brief returns a list of features that are available boolean values.
-   * 
-   * If a feature has been set then it will be set as "true" otherwise it will be false.
-   */
-  const rr_interfaces::msg::FeatureSet get_feature_set();
 
 private:
   /**
@@ -94,42 +56,19 @@ private:
    */
   void callback();
 
-  // variables
-  sensor_msgs::msg::NavSatFix::SharedPtr gps_;
-  sensor_msgs::msg::Joy::SharedPtr joystick_;
-  sensor_msgs::msg::BatteryState::SharedPtr batt_state_;
-  sensor_msgs::msg::Image::SharedPtr img;
-  sensor_msgs::msg::Imu::SharedPtr imu;
-  std::shared_ptr<std::list<sensor_msgs::msg::Range>> ranges = std::make_shared<std::list<sensor_msgs::msg::Range>>();
-  rr_interfaces::msg::FeatureSet::SharedPtr feature_set;
-
-  // shared mutex to allow multiple readers or one writer
-  std::shared_mutex mutex_;
-
-  // methods and variables below will be moved. s
-  /**
-   * @deprecated
-   * @fn reset_response 
-   * @brief Creates new Response and new GUID
-   */
-  void reset_response();
-  /**
-   * @deprecated
-   * @fn publish
-   * @brief publishes to the buffer topic.
-   * 
-   */
-  void publish();
-
+  // sent timer that will be controlled within this executor.
   rclcpp::TimerBase::SharedPtr timer_;
-  // This will be moved to a publishing service, as well reset, and publish,
-  // callback from the timer_ variable will control this.
-  rclcpp::Publisher<rr_interfaces::msg::BufferResponse>::SharedPtr publisher_;
+
+  // updated for each request taht is sent
   size_t count_ = 0;
 
-  // // Shared variables between subscribers, and publisher.
-  rr_interfaces::msg::BufferResponse::SharedPtr buffer_response_;
+  std::shared_ptr<RR_STATE_MAINTAINER_CLASS> state_;
+  std::shared_ptr<RR_STATE_BUF_FACTORY_CLASS> factory_;
+
+  // internal initialization methods
+  void init_state();
+  void init_factory();
 };
-} // namespace rrobot
+} // namespace rr_buffer_services
 
 #endif

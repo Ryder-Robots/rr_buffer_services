@@ -1,81 +1,39 @@
 #include "rr_buffer_services/rr_controller.hpp"
 
-using namespace rrobot;
+using namespace rr_buffer_services;
+
+void RrController::init_state()
+{
+  pluginlib::ClassLoader<RR_STATE_MAINTAINER_CLASS> poly_loader(RR_COMMON_BASE, RR_STATE_MAINTAINER);
+  state_ = poly_loader.createSharedInstance(RR_DEFAULT_STATE_MAINTAINER);
+}
+
+void RrController::init_factory()
+{
+  this->declare_parameter<std::string>(RR_CLI_ROBOT_TYPE, RR_DEFAULT_ROBOT_TYPE);
+  // load factory base class.
+  pluginlib::ClassLoader<RR_STATE_BUF_FACTORY_CLASS> poly_loader(RR_COMMON_BASE, RR_STATE_BUF_FACTORY);
+
+  RCLCPP_INFO(this->get_logger(), "loading robot '%s'", this->get_parameter(RR_CLI_ROBOT_TYPE).as_string().c_str());
+  factory_ = poly_loader.createSharedInstance(this->get_parameter(RR_CLI_ROBOT_TYPE).as_string());
+
+  RCLCPP_INFO(this->get_logger(), "initializing robot '%s'", this->get_parameter(RR_CLI_ROBOT_TYPE).as_string().c_str());
+  factory_->initialize(shared_from_this(), state_);
+}
 
 void RrController::init()
 {
+  try {
+    RCLCPP_INFO(this->get_logger(), "loading plugins");
+    init_state();
+    init_factory();
+  }
+  catch (pluginlib::PluginlibException &ex) {
+    RCLCPP_FATAL(this->get_logger(), "could not load plugins, failed on the following: %s", ex.what());
+  }
 }
 
-void RrController::reset_response()
-{
-}
 
 void RrController::callback()
 {
 }
-
-void RrController::publish()
-{
-  std::shared_lock lock(mutex_);
-}
-
-// gps setter/getter
-void RrController::set_gps(const sensor_msgs::msg::NavSatFix gps)
-{
-  RCLCPP_DEBUG(this->get_logger(), "recieved GPS");
-  std::unique_lock<std::shared_mutex> lock(mutex_);
-  buffer_response_->feature_sets.has_gps = true;
-  buffer_response_->gps = gps;
-}
-
-
-void RrController::set_joystick(const sensor_msgs::msg::Joy joy)
-{
-  RCLCPP_DEBUG(this->get_logger(), "recieved Joystick");
-  std::unique_lock<std::shared_mutex> lock(mutex_);
-  buffer_response_->feature_sets.has_joy = true;
-  buffer_response_->joystick = joy;
-}
-
-// batt state getter/setter
-void RrController::set_batt_state(const sensor_msgs::msg::BatteryState batt_state)
-{
-  RCLCPP_DEBUG(this->get_logger(), "recieved batt_state");
-  std::unique_lock<std::shared_mutex> lock(mutex_);
-  buffer_response_->feature_sets.has_batt_state = true;
-  buffer_response_->batt_state = batt_state;
-}
-
-
-const sensor_msgs::msg::BatteryState RrController::get_batt_state() {
-    RCLCPP_DEBUG(this->get_logger(), "sending batt_state");
-    std::shared_lock<std::shared_mutex> lock(mutex_);
-    return buffer_response_->batt_state;
-}
-
-// image setter/getter
-void RrController::set_img(const sensor_msgs::msg::Image img)
-{
-  RCLCPP_DEBUG(this->get_logger(), "recieved img");
-  std::unique_lock<std::shared_mutex> lock(mutex_);
-  buffer_response_->feature_sets.has_img = true;
-  buffer_response_->img = img;
-}
-
-void RrController::set_imu(const sensor_msgs::msg::Imu imu)
-{
-  RCLCPP_DEBUG(this->get_logger(), "recieved IMU");
-  std::unique_lock<std::shared_mutex> lock(mutex_);
-  buffer_response_->feature_sets.has_img = true;
-  buffer_response_->imu = imu;
-}
-
-void RrController::set_ranges(const std::list<sensor_msgs::msg::Range> ranges)
-{
-//   RCLCPP_DEBUG(this->get_logger(), "recieved ranges");
-//   std::list<sensor_msgs::msg::Range> nranges(ranges);
-//   std::unique_lock<std::shared_mutex> lock(mutex_);
-//   buffer_response_->feature_sets.has_ranges = true;
-//   buffer_response_->ranges = nranges;
-}
-
