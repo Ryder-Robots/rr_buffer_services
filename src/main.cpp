@@ -7,11 +7,13 @@ using namespace rr_buffer_services;
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
+  auto node = std::make_shared<RrController>();
+  node->init();
 
-  std::shared_ptr<RrController> ctl = std::make_shared<RrController>();
-  ctl->init();
-  // auto subscriberFactory = std::make_shared<RrSubscriberFactory>(ctl);
-  rclcpp::spin(ctl);
+  rclcpp::executors::MultiThreadedExecutor executor;
+  executor.add_node(node);
+  executor.spin();
+
   rclcpp::shutdown();
   return 0;
 }

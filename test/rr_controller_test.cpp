@@ -36,7 +36,7 @@ protected:
   }
 
   rclcpp::Logger logger_ = rclcpp::get_logger("test_logger");
-  RrStateMaintainer state_maintainer_ = RrStateMaintainer(logger_);
+  RrStateMaintainer state_maintainer_ = RrStateMaintainer();
 };
 
 

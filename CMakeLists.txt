@@ -43,12 +43,12 @@ install(TARGETS
 )
 
 # --- Build and link test using same library ---
-if(BUILD_TESTING)
+# if(BUILD_TESTING)
   add_subdirectory(test)
   # find_package(ament_cmake_gtest REQUIRED)
   # ament_add_gtest(${PROJECT_NAME}_test test/rr_controller_test.cpp)
   # target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME}_lib)
   # ament_target_dependencies(${PROJECT_NAME}_test rclcpp rr_interfaces sensor_msgs)
-endif()
+# endif()
 
 ament_package()
