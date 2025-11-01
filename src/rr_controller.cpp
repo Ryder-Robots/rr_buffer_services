@@ -38,9 +38,9 @@ void RrController::init()
     publish_group_ = this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
     auto timer_callback = std::bind(&RrController::callback, this);
 
+    heartbeat_pub_  = this->create_publisher<rr_interfaces::msg::Heartbeat>(rr_constants::TOPIC_HEARTBEAT, RR_QUEUE_LIMIT);
     // ticks should be tunable.
-    std::chrono::duration<int, std::milli> ticks(RR_TOPIC_TICK);
-    timer_ = this->create_wall_timer(ticks, timer_callback, publish_group_);
+    timer_ = this->create_wall_timer(ticks_, timer_callback, publish_group_);
   }
   catch (pluginlib::PluginlibException &ex) {
     RCLCPP_FATAL(this->get_logger(), "could not load plugins, failed on the following: %s", ex.what());
@@ -71,6 +71,7 @@ std::string RrController::uuid_to_string(const unique_identifier_msgs::msg::UUID
  */
 void RrController::callback()
 {
+  bool has_sensor = false;
   RCLCPP_DEBUG(this->get_logger(), "called publisher");
   boost::uuids::uuid boost_uuid = boost::uuids::random_generator()();
   unique_identifier_msgs::msg::UUID uuid_msg;
@@ -81,10 +82,12 @@ void RrController::callback()
   // note that these attributes can change while being read, so very time critical
   // things should be done last.
   if (state_->has_batt_state()) {
+    has_sensor = true;
     msg_resp.batt_state = state_->get_batt_state();
   }
 
   if (state_->has_gps()) {
+    has_sensor = true;
     msg_resp.gps = state_->get_gps();
   }
   if (state_->has_joystick()) {
@@ -92,26 +95,45 @@ void RrController::callback()
   }
 
   if (state_->has_imu()) {
+    has_sensor = true;
     msg_resp.imu = state_->get_imu();
   }
 
   // asside from range sensors image is the most crucual for object detection.
   if (state_->has_image()) {
+    has_sensor = true;
     msg_resp.img = state_->get_image();
   }
 
   // note range sensors are distinguished by frame_link, so they are just bundled together.
   if (state_->has_ranges()) {
+    has_sensor = true;
     msg_resp.ranges = state_->get_ranges();
   }
 
-  // publish the message.
-  msg_resp.guid = uuid_msg;
-  msg_resp.exec_time = this->now();
-  this->publisher_->publish(msg_resp);
+  auto now = this->now();
+  if (has_sensor) {
+    // publish the message.
+    msg_resp.guid = uuid_msg;
+    msg_resp.header.stamp = now;
+    msg_resp.header.frame_id = rr_constants::LINK_BUFF_SVR;
+    this->publisher_->publish(msg_resp);
 
-  // For speed this can be disabled,  translating UUID to string can be expensive.
-  // if (this->get_logger().get_level() == rclcpp::Logger::Level::Debug) {
-    RCLCPP_DEBUG(this->get_logger(), "published: %s", uuid_to_string(uuid_msg).c_str());
-  // }
+    
+    // For speed this can be disabled,  translating UUID to string can be expensive.
+    // if (this->get_logger().get_level() == rclcpp::Logger::Level::Debug) {
+      RCLCPP_DEBUG(this->get_logger(), "published: %s", uuid_to_string(uuid_msg).c_str());
+    // }
+  }
+
+  // TODO: Note that heartbeat should be placed in its own method,  may an common header or code sample of some sort.
+  // Create a heartbeat and send it.
+  rr_interfaces::msg::Heartbeat heartbeat;
+  heartbeat.header.stamp = now;
+  heartbeat.header.frame_id = rr_constants::LINK_BUFF_SVR;
+  auto total_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(ticks_).count();
+  heartbeat.duration.sec = static_cast<int32_t>(total_ns / 1000000000);
+  heartbeat.duration.nanosec = static_cast<uint32_t>(total_ns % 1000000000);
+  heartbeat.actual_duration =  now - ex_time_;
+  heartbeat_pub_->publish(heartbeat);
 }

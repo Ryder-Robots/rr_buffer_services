@@ -5,7 +5,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rr_common_base/rr_state_maintainer.hpp"
 #include "rr_common_base/rr_buf_factory.hpp"
+#include "rr_common_base/rr_constants.hpp"
 #include "rr_interfaces/msg/buffer_response.hpp"
+#include "rr_interfaces/msg/heartbeat.hpp"
 #include "unique_identifier_msgs/msg/uuid.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -13,6 +15,7 @@
 #include <list>
 #include <memory>
 #include <pluginlib/class_loader.hpp>
+
 
 namespace rr_buffer_services
 {
@@ -72,13 +75,17 @@ private:
   rclcpp::CallbackGroup::SharedPtr sub_img_group_;
   rclcpp::CallbackGroup::SharedPtr sub_sensor_group_;
 
+  rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
   rclcpp::Publisher<rr_interfaces::msg::BufferResponse>::SharedPtr publisher_;
+  rclcpp::Publisher<rr_interfaces::msg::Heartbeat>::SharedPtr heartbeat_pub_;
+  rclcpp::Time ex_time_ = clock_.now();
 
   // updated for each request taht is sent
   size_t count_ = 0;
 
   std::shared_ptr<RR_STATE_MAINTAINER_CLASS> state_;
   std::shared_ptr<RR_STATE_BUF_FACTORY_CLASS> factory_;
+  std::chrono::duration<int, std::milli> ticks_ = std::chrono::duration<int, std::milli>(RR_TOPIC_TICK);
 
   // internal initialization methods
   void init_state();
